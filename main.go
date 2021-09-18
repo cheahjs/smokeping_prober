@@ -87,6 +87,7 @@ func main() {
 		buckets    = kingpin.Flag("buckets", "A comma delimited list of buckets to use").Default(defaultBuckets).String()
 		interval   = kingpin.Flag("ping.interval", "Ping interval duration").Short('i').Default("1s").Duration()
 		privileged = kingpin.Flag("privileged", "Run in privileged ICMP mode").Default("true").Bool()
+		iface      = kingpin.Flag("interface", "Network interface/source IP address to use").Short('I').String()
 		hosts      = HostList(kingpin.Arg("hosts", "List of hosts to ping").Required())
 	)
 
@@ -121,6 +122,12 @@ func main() {
 		pinger.Timeout = time.Duration(math.MaxInt64)
 		pinger.RecordRtts = false
 		pinger.SetPrivileged(*privileged)
+		if *iface != "" {
+			if err = pinger.SetSrcAddr(*iface); err != nil {
+				log.Errorf("failed to set source address to '%s': %s\n", *iface, err.Error())
+				return
+			}
+		}
 
 		pingers[i] = pinger
 	}
