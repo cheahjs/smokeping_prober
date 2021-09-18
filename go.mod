@@ -8,3 +8,5 @@ require (
 	github.com/prometheus/common v0.20.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
+
+replace github.com/go-ping/ping v0.0.0-20210417180633-a50937ef0888 => github.com/cheahjs/ping v0.0.0-20210918192116-2e7008cfd4a9
