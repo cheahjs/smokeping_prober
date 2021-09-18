@@ -1,11 +1,12 @@
-ARG ARCH="amd64"
-ARG OS="linux"
-FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
-LABEL maintainer="Ben Kochie <superq@gmail.com>"
+FROM golang:1.16-buster as build
+WORKDIR /go/src/app
+ADD . /go/src/app
 
-ARG ARCH="amd64"
-ARG OS="linux"
-COPY .build/${OS}-${ARCH}/smokeping_prober /bin/smokeping_prober
+RUN go get -d -v ./...
+RUN go build -o /go/bin/app github.com/superq/smokeping_prober
+
+FROM discolix/base:debug
+COPY --from=build /go/bin/app /
 
 EXPOSE 9374
-ENTRYPOINT  [ "/bin/smokeping_prober" ]
+ENTRYPOINT ["/app"]
